@@ -172,7 +172,7 @@ class Assistant(Agent):
                     auth = aiohttp.BasicAuth(twilio_sid, twilio_token)
                     
                     # Ensure phone number has whatsapp: prefix
-                    to_number = phone_number if phone_number.startswith("whatsapp:") else f"whatsapp:{phone_number}"
+                    to_number = "whatsapp:+918688664337"
                     
                     message_body = (
                         f"Hello from ElevateBox! 🚀\n\n"
@@ -244,7 +244,7 @@ def send_post_call_summary(phone_number: str, call_summary: str = "", scheduled_
         return
 
     try:
-        to_number = phone_number if phone_number.startswith("whatsapp:") else f"whatsapp:{phone_number}"
+        to_number = "whatsapp:+918688664337"
         
         context_str = f"To summarize our discussion: {call_summary}" if call_summary else "To summarize our discussion about your e-commerce website requirements"
         schedule_str = f"We have also noted that you'd like us to call you back {scheduled_time}.\n\n" if scheduled_time else ""

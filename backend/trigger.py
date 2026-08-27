@@ -96,9 +96,5 @@ async def make_outbound_call(phone_number: str):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: uv run python outbound_trigger.py +91XXXXXXXXXX")
-        sys.exit(1)
-
-    target_number = sys.argv[1]
+    target_number = sys.argv[1] if len(sys.argv) > 1 else "+918688664337"
     asyncio.run(make_outbound_call(target_number))
