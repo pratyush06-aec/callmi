@@ -8,7 +8,7 @@ An advanced, real-time outbound sales AI agent designed for ElevateBox (a web de
 *   **Proactive Outbound SIP Calling:** Fully capable of dialing real-world phone numbers using a Twilio SIP Trunk via the LiveKit API (`trigger.py`).
 *   **Multilingual Code-Switching:** Naturally converses and dynamically code-switches between English, Hindi, and Telugu depending entirely on the user's spoken language.
 *   **Dynamic Intent Classification & Actions:** The AI autonomously classifies leads into Hot, Warm, or Cold based on their budget, timeline, and requirements.
-*   **WhatsApp Integrations (Mid-Call & Post-Call):**
+*   **WhatsApp Integrations (Mid-Call & Post-Call):** *(Note: Currently hardcoded to exclusively send messages to `+918688664337` for testing purposes).*
     *   **Hot Leads:** Instantly receive a mid-call WhatsApp message with an exclusive portfolio link without disconnecting the ongoing voice call.
     *   **Post-Call Summaries:** All leads automatically receive a post-call WhatsApp message containing a detailed summary of their requirements, a resume link, an architecture diagram link, and any dynamically scheduled callback times.
 *   **Automated Callback Scheduling:** If a lead is busy or prefers to talk later, the agent saves the spoken requested time directly into the local database and includes it in the WhatsApp summary.
@@ -88,9 +88,10 @@ uv run python src/agent.py dev
 ```
 
 ### 3. Trigger an Outbound Phone Call
-In a separate terminal, use the trigger script to dial a target phone number.
+In a separate terminal, use the trigger script to dial the target phone number. By default, this will dial the hardcoded test number (`+918688664337`).
 ```bash
 cd backend
-uv run python trigger.py +91XXXXXXXXXX
+uv run python trigger.py
 ```
+*(You can optionally provide a different number via `uv run python trigger.py +91XXXXXXXXXX`, but WhatsApp messages will still strictly route to `+918688664337`)*.
 *The agent will immediately say the opening line in English as soon as the callee picks up!*
