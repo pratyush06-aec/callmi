@@ -68,6 +68,27 @@ async def make_outbound_call(phone_number: str):
         print("✓ Agent dispatched to room, waiting for agent to connect...")
         await asyncio.sleep(2)
 
+        # Send a pre-call WhatsApp message using Green API
+        green_api_id = os.environ.get("GREEN_API_ID_INSTANCE")
+        green_api_token = os.environ.get("GREEN_API_API_TOKEN_INSTANCE")
+        if green_api_id and green_api_token:
+            import urllib.request
+            import json
+            url = f"https://7107.api.greenapi.com/waInstance{green_api_id}/sendMessage/{green_api_token}"
+            target_wa = phone_number.replace("+", "")
+            payload = {
+                "chatId": f"{target_wa}@c.us",
+                "message": "Hi, this is Pratyush's AI assistant. I'm calling you from my automated routing line, this is {7810983647} my actual Indian mobile number right now."
+            }
+            data = json.dumps(payload).encode('utf-8')
+            req = urllib.request.Request(url, data=data, method="POST")
+            req.add_header("Content-Type", "application/json")
+            try:
+                urllib.request.urlopen(req)
+                print("✓ Pre-call WhatsApp message sent successfully.")
+            except Exception as e:
+                print(f"✗ Failed to send pre-call WhatsApp: {e}")
+
         # Now dial the phone number
         participant = await lk_api.sip.create_sip_participant(
             api.CreateSIPParticipantRequest(
@@ -96,5 +117,5 @@ async def make_outbound_call(phone_number: str):
 
 
 if __name__ == "__main__":
-    target_number = sys.argv[1] if len(sys.argv) > 1 else "+918688664337"
+    target_number = sys.argv[1] if len(sys.argv) > 1 else "+919832170489"
     asyncio.run(make_outbound_call(target_number))

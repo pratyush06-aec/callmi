@@ -161,41 +161,39 @@ class Assistant(Agent):
         self.call_summary = call_context
         
         if intent_level == "Hot":
-            # Send immediate WhatsApp message with context
-            twilio_sid = os.environ.get("TWILIO_ACCOUNT_SID")
-            twilio_token = os.environ.get("TWILIO_AUTH_TOKEN")
-            twilio_number = os.environ.get("TWILIO_WHATSAPP_NUMBER")
+            # Send immediate WhatsApp message with context via Green API
+            green_api_id = os.environ.get("GREEN_API_ID_INSTANCE")
+            green_api_token = os.environ.get("GREEN_API_API_TOKEN_INSTANCE")
             
-            if twilio_sid and twilio_token and twilio_number and phone_number != "unknown":
+            if green_api_id and green_api_token and phone_number != "unknown":
                 try:
-                    url = f"https://api.twilio.com/2010-04-01/Accounts/{twilio_sid}/Messages.json"
-                    auth = aiohttp.BasicAuth(twilio_sid, twilio_token)
+                    url = f"https://7107.api.greenapi.com/waInstance{green_api_id}/sendMessage/{green_api_token}"
                     
-                    # Ensure phone number has whatsapp: prefix
-                    to_number = "whatsapp:+918688664337"
+                    # Format phone number for Green API (remove +, add @c.us)
+                    target = phone_number.replace("+", "")
+                    to_number = f"{target}@c.us"
                     
                     message_body = (
-                        f"Hello from ElevateBox! 🚀\n\n"
-                        f"It is great speaking with you. Just to confirm while we are on the phone, here is what we discussed regarding your project: {call_context}\n\n"
+                        f"Hello! 🚀\n\n"
+                        f"It is great speaking with you. Just to confirm while we are on the phone, here is a quick summary of what you are looking for:\n• {call_context}\n\n"
                         f"I will send over our architecture and my resume as soon as we wrap up the call!"
                     )
                     
                     payload = {
-                        "From": twilio_number,
-                        "To": to_number,
-                        "Body": message_body
+                        "chatId": to_number,
+                        "message": message_body
                     }
                     
                     async with aiohttp.ClientSession() as session:
-                        async with session.post(url, auth=auth, data=payload) as response:
+                        async with session.post(url, json=payload) as response:
                             if response.status not in (200, 201):
                                 logger.error("Failed to send WhatsApp: %s", await response.text())
                             else:
-                                logger.info("Mid-call WhatsApp sent successfully!")
+                                logger.info("Mid-call WhatsApp sent successfully via Green API!")
                 except Exception as e:
                     logger.error("Error sending WhatsApp: %s", e)
             else:
-                logger.warning("Missing Twilio credentials or phone number. WhatsApp not sent.")
+                logger.warning("Missing Green API credentials or phone number. WhatsApp not sent.")
                 
         return f"Lead classified as {intent_level}. Actions taken."
 
@@ -235,51 +233,47 @@ def send_post_call_summary(phone_number: str, call_summary: str = "", scheduled_
         logger.warning("Cannot send post-call summary: unknown phone number.")
         return
 
-    twilio_sid = os.environ.get("TWILIO_ACCOUNT_SID")
-    twilio_token = os.environ.get("TWILIO_AUTH_TOKEN")
-    twilio_number = os.environ.get("TWILIO_WHATSAPP_NUMBER")
+    green_api_id = os.environ.get("GREEN_API_ID_INSTANCE")
+    green_api_token = os.environ.get("GREEN_API_API_TOKEN_INSTANCE")
 
-    if not (twilio_sid and twilio_token and twilio_number):
-        logger.warning("Twilio credentials missing. Skipping post-call summary.")
+    if not (green_api_id and green_api_token):
+        logger.warning("Green API credentials missing. Skipping post-call summary.")
         return
 
     try:
-        to_number = "whatsapp:+918688664337"
+        target = phone_number.replace("+", "")
+        to_number = f"{target}@c.us"
         
-        context_str = f"To summarize our discussion: {call_summary}" if call_summary else "To summarize our discussion about your e-commerce website requirements"
+        context_str = f"Here is a quick summary of what you are looking for:\n• {call_summary}" if call_summary else "Here is a quick summary of your e-commerce website requirements:"
         schedule_str = f"We have also noted that you'd like us to call you back {scheduled_time}.\n\n" if scheduled_time else ""
         
         message_body = (
-            f"Hi there! Thank you for speaking with ElevateBox today. 🚀\n\n"
+            f"Hi there! Thank you for speaking with me today. 🚀\n\n"
             f"{context_str}\n\n"
             f"{schedule_str}"
             f"As promised, here is our architecture diagram and my resume for your review:\n"
-            f"📄 Resume: [https://drive.google.com/file/d/1acOOELYW5hWqZalPsBuLwcJ67jZ_aH8x/view]\n"
+            f"📄 Resume: https://drive.google.com/file/d/1acOOELYW5hWqZalPsBuLwcJ67jZ_aH8x/view\n"
+            f"💻 GitHub Repo: https://github.com/pratyush06-aec/callmi\n"
             f"🏗️ Architecture Diagram: [Link to Architecture Diagram]\n\n"
             f"If you have any further questions or want to get started, you can reach me directly at my mobile number: 7810983647.\n\n"
-            f"We look forward to taking your business online!"
+            f"I look forward to taking your business online!"
         )
 
-        url = f"https://api.twilio.com/2010-04-01/Accounts/{twilio_sid}/Messages.json"
+        url = f"https://7107.api.greenapi.com/waInstance{green_api_id}/sendMessage/{green_api_token}"
         
-        # Build form payload
-        data = urllib.parse.urlencode({
-            "From": twilio_number,
-            "To": to_number,
-            "Body": message_body
-        }).encode('utf-8')
+        payload = {
+            "chatId": to_number,
+            "message": message_body
+        }
         
-        # Build basic auth header
-        auth_str = f"{twilio_sid}:{twilio_token}"
-        auth_bytes = base64.b64encode(auth_str.encode("utf-8")).decode("ascii")
+        data = json.dumps(payload).encode('utf-8')
         
         req = urllib.request.Request(url, data=data, method="POST")
-        req.add_header("Authorization", f"Basic {auth_bytes}")
-        req.add_header("Content-Type", "application/x-www-form-urlencoded")
+        req.add_header("Content-Type", "application/json")
         
         with urllib.request.urlopen(req) as resp:
             if resp.status in (200, 201):
-                logger.info("Post-call WhatsApp summary sent successfully!")
+                logger.info("Post-call WhatsApp summary sent successfully via Green API!")
             else:
                 logger.error(f"Failed to send post-call WhatsApp: {resp.status}")
                 
@@ -313,7 +307,6 @@ async def my_agent(ctx: JobContext):
         raise
 
     # ── DEBUG: LLM init ─────────────────────────────────────────────────
-    # logger.debug("[LLM] Initializing Groq LLM (model=openai/gpt-oss-20b)...")
     try:
         llm = groq.LLM(model="openai/gpt-oss-20b", temperature=0.5)
         # logger.debug("[LLM] Groq LLM created successfully")
@@ -454,18 +447,31 @@ async def my_agent(ctx: JobContext):
             scheduled_time = getattr(agent_instance, 'scheduled_callback_time', None)
             send_post_call_summary(phone_number, call_summary, scheduled_time)
 
-        # Immediately greet the user as requested in Step 4
-        # Adding a brief delay ensures the frontend audio tracks are fully mounted before speaking
         import asyncio
-        await asyncio.sleep(1.5)
-        if is_outbound:
-            await session.say(
-                "Hello, this is from ElevateBox. We noticed you might be interested in taking your business online. "
-                "Are you looking to build an e-commerce website?",
-                allow_interruptions=True,
-            )
-        else:
-            await session.say("Hello, welcome to ElevateBox. Are you looking to build a website?", allow_interruptions=True)
+        async def delayed_greeting():
+            await asyncio.sleep(1.5)
+            try:
+                if is_outbound:
+                    await session.say(
+                        "Hello, this is from ElevateBox. We noticed you might be interested in taking your business online. "
+                        "Are you looking to build an e-commerce website?",
+                        allow_interruptions=True,
+                    )
+                else:
+                    await session.say("Hello, welcome to ElevateBox. Are you looking to build a website?", allow_interruptions=True)
+            except RuntimeError as e:
+                logger.info("Skipped initial greeting: %s", e)
+
+        @ctx.room.on("participant_connected")
+        def on_participant_connected(participant: rtc.RemoteParticipant):
+            if participant.kind == rtc.ParticipantKind.PARTICIPANT_KIND_SIP:
+                logger.info(f"SIP Participant {participant.identity} joined. Grieeting them in 1.5s.")
+                asyncio.create_task(delayed_greeting())
+
+        # Check if they are already in the room (race condition safety)
+        sip_participant = next((p for p in ctx.room.remote_participants.values() if p.kind == rtc.ParticipantKind.PARTICIPANT_KIND_SIP), None)
+        if sip_participant:
+            asyncio.create_task(delayed_greeting())
         # logger.debug("[CONNECT] ctx.connect() completed — agent is now in the room")
     except Exception as e:
         # logger.error("[CONNECT] ctx.connect() FAILED: %s", e)

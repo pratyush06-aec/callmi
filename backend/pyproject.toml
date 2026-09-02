@@ -9,7 +9,7 @@ description = "Voice AI agent starter powered by ElevenLabs TTS and LiveKit Agen
 requires-python = ">=3.10, <3.15"
 
 dependencies = [
-    "livekit-agents[deepgram,google,silero,turn-detector]~=1.4",
+    "livekit-agents[deepgram,silero,turn-detector]~=1.4",
     "livekit-plugins-noise-cancellation~=0.2",
     "livekit-api>=1.0.0",
     "aiohttp",
