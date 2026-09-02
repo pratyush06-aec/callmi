@@ -117,5 +117,5 @@ async def make_outbound_call(phone_number: str):
 
 
 if __name__ == "__main__":
-    target_number = sys.argv[1] if len(sys.argv) > 1 else "+919832170489"
+    target_number = sys.argv[1] if len(sys.argv) > 1 else "+918688664337"
     asyncio.run(make_outbound_call(target_number))
