@@ -254,7 +254,7 @@ def send_post_call_summary(phone_number: str, call_summary: str = "", scheduled_
             f"As promised, here is our architecture diagram and my resume for your review:\n"
             f"📄 Resume: https://drive.google.com/file/d/1acOOELYW5hWqZalPsBuLwcJ67jZ_aH8x/view\n"
             f"💻 GitHub Repo: https://github.com/pratyush06-aec/callmi\n"
-            f"🏗️ Architecture Diagram: [Link to Architecture Diagram]\n\n"
+            f"🏗️ Architecture Diagram: https://drive.google.com/file/d/1WDBfwrhDuI7mN2cMAd-80kGymC1N44fS/view\n\n"
             f"If you have any further questions or want to get started, you can reach me directly at my mobile number: 7810983647.\n\n"
             f"I look forward to taking your business online!"
         )
