@@ -11,13 +11,15 @@ An advanced, real-time outbound sales AI agent designed for ElevateBox (a web de
 *   **Green API WhatsApp Integrations (Pre-Call, Mid-Call & Post-Call):**
     *   **Pre-Call Context:** Sends a WhatsApp message from your actual personal number via Green API immediately before the SIP call rings, giving the callee context so they don't ignore the international SIP caller ID.
     *   **Mid-Call Portfolio:** Hot leads instantly receive a mid-call WhatsApp message with an exclusive portfolio link without disconnecting the ongoing voice call.
-    *   **Post-Call Summaries:** All leads automatically receive a post-call WhatsApp message containing a detailed summary of their requirements, a resume link, a GitHub repo link, and any dynamically scheduled callback times.
+    *   **Post-Call Summaries:** All leads automatically receive a post-call WhatsApp message containing a detailed summary of their requirements, a resume link, a GitHub repo link, a system architecture diagram link, and any dynamically scheduled callback times.
 *   **Automated Callback Scheduling:** If a lead is busy or prefers to talk later, the agent saves the spoken requested time directly into the local database and includes it in the WhatsApp summary.
 *   **Strict Domain Guardrails:** Enforced system prompt boundaries ensure the agent strictly refuses to discuss topics outside of web development and e-commerce.
 
 ---
 
 ## 🏗️ System Architecture
+
+📄 **[View Full System Architecture & Workflow Diagram](https://drive.google.com/file/d/1WDBfwrhDuI7mN2cMAd-80kGymC1N44fS/view)**
 
 The project consists of a purely Python-based backend that handles SIP communication, LLM inference, and external API requests:
 
