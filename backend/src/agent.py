@@ -453,12 +453,12 @@ async def my_agent(ctx: JobContext):
             try:
                 if is_outbound:
                     await session.say(
-                        "Hello, this is from ElevateBox. We noticed you might be interested in taking your business online. "
+                        "Hello! We noticed you might be interested in taking your business online. "
                         "Are you looking to build an e-commerce website?",
                         allow_interruptions=True,
                     )
                 else:
-                    await session.say("Hello, welcome to ElevateBox. Are you looking to build a website?", allow_interruptions=True)
+                    await session.say("Hello! Are you looking to build a website?", allow_interruptions=True)
             except RuntimeError as e:
                 logger.info("Skipped initial greeting: %s", e)
 

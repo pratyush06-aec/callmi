@@ -43,7 +43,7 @@ async def make_outbound_call(phone_number: str):
     room_name = f"outbound-sales-call-{phone_number.replace('+', '')}"
 
     print(f"╔══════════════════════════════════════════╗")
-    print(f"║  ELEVATEBOX OUTBOUND SALES CALL          ║")
+    print(f"║  OUTBOUND SALES CALL                     ║")
     print(f"╠══════════════════════════════════════════╣")
     print(f"║  Dialing: {phone_number:<30} ║")
     print(f"║  Room:    {room_name:<30} ║")
